@@ -8,8 +8,8 @@ from PIL import Image
 from torchvision import transforms
 from torchvision.models import resnet18
 
-import io
 from pathlib import Path
+import io
 
 
 # ============================================
@@ -53,9 +53,7 @@ print("Using device:", device)
 
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
-
     transforms.ToTensor(),
-
     transforms.Normalize(
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]
@@ -76,7 +74,7 @@ model.fc = nn.Linear(
 
 
 # ============================================
-# 6. Find trained model
+# 6. Find model file safely
 # ============================================
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -86,7 +84,6 @@ MODEL_PATH = (
     / "model"
     / "ai_image_authenticator.pth"
 )
-
 
 print("Model path:", MODEL_PATH)
 
@@ -98,7 +95,7 @@ print("Model path:", MODEL_PATH)
 if not MODEL_PATH.exists():
 
     raise FileNotFoundError(
-        f"Trained model not found at: {MODEL_PATH}"
+        f"Model file not found: {MODEL_PATH}"
     )
 
 
@@ -141,12 +138,26 @@ classes = [
 def home():
 
     return {
-        "message": "AI Image Authenticator API is running"
+        "message": "AI Image Authenticator API is running",
+        "status": "online"
     }
 
 
 # ============================================
-# 11. Prediction endpoint
+# 11. Health check
+# ============================================
+
+@app.get("/health")
+def health():
+
+    return {
+        "status": "healthy",
+        "model": "loaded"
+    }
+
+
+# ============================================
+# 12. Image prediction endpoint
 # ============================================
 
 @app.post("/predict")
@@ -156,20 +167,9 @@ async def predict(
 
     try:
 
-        # ------------------------------------
-        # Check file
-        # ------------------------------------
-
-        if not file.filename:
-
-            return {
-                "error": "No image file selected."
-            }
-
-
-        # ------------------------------------
-        # Check image type
-        # ------------------------------------
+        # ----------------------------------------
+        # Check file type
+        # ----------------------------------------
 
         allowed_types = [
             "image/jpeg",
@@ -180,31 +180,43 @@ async def predict(
         if file.content_type not in allowed_types:
 
             return {
-                "error":
-                "Unsupported image format. "
-                "Use JPG, JPEG, PNG or WEBP."
+                "error": (
+                    "Unsupported image format. "
+                    "Use JPG, JPEG, PNG or WEBP."
+                )
             }
 
 
-        # ------------------------------------
+        # ----------------------------------------
         # Read uploaded image
-        # ------------------------------------
+        # ----------------------------------------
 
         image_bytes = await file.read()
 
 
-        # ------------------------------------
-        # Convert to PIL image
-        # ------------------------------------
+        # ----------------------------------------
+        # Check empty file
+        # ----------------------------------------
+
+        if not image_bytes:
+
+            return {
+                "error": "Uploaded image is empty."
+            }
+
+
+        # ----------------------------------------
+        # Convert bytes to PIL image
+        # ----------------------------------------
 
         image = Image.open(
             io.BytesIO(image_bytes)
         ).convert("RGB")
 
 
-        # ------------------------------------
+        # ----------------------------------------
         # Preprocess image
-        # ------------------------------------
+        # ----------------------------------------
 
         image_tensor = transform(image)
 
@@ -213,15 +225,13 @@ async def predict(
         image_tensor = image_tensor.to(device)
 
 
-        # ------------------------------------
+        # ----------------------------------------
         # Make prediction
-        # ------------------------------------
+        # ----------------------------------------
 
         with torch.no_grad():
 
-            output = model(
-                image_tensor
-            )
+            output = model(image_tensor)
 
             probabilities = torch.softmax(
                 output,
@@ -234,27 +244,27 @@ async def predict(
             )
 
 
-        # ------------------------------------
+        # ----------------------------------------
         # Get prediction
-        # ------------------------------------
+        # ----------------------------------------
 
         prediction = classes[
             predicted.item()
         ]
 
 
-        # ------------------------------------
+        # ----------------------------------------
         # Confidence percentage
-        # ------------------------------------
+        # ----------------------------------------
 
         confidence_percentage = (
             confidence.item() * 100
         )
 
 
-        # ------------------------------------
+        # ----------------------------------------
         # Return result
-        # ------------------------------------
+        # ----------------------------------------
 
         return {
 
@@ -272,13 +282,6 @@ async def predict(
 
     except Exception as e:
 
-        print(
-            "Prediction error:",
-            str(e)
-        )
-
         return {
-
             "error": str(e)
-
         }
