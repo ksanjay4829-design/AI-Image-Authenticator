@@ -1,57 +1,131 @@
-// ============================================
+// ============================================================
 // AI IMAGE AUTHENTICATOR - FRONTEND SCRIPT
-// ============================================
+// ============================================================
 
-// FastAPI backend
-const API_URL = "http://127.0.0.1:8000/predict";
+// ============================================================
+// 1. BACKEND API
+// ============================================================
 
-// Elements
+const API_URL = "https://ai-image-authenticator.onrender.com";
+
+
+// ============================================================
+// 2. GET HTML ELEMENTS
+// ============================================================
+
 const imageInput = document.getElementById("imageInput");
 const uploadCard = document.getElementById("uploadCard");
 
-// Store selected image
+
+// Try to find the analyze button using common IDs
+const analyzeButton =
+    document.getElementById("analyzeBtn") ||
+    document.getElementById("analyzeButton") ||
+    document.querySelector(".analyze-btn") ||
+    document.querySelector("button");
+
+
+// ============================================================
+// 3. VARIABLES
+// ============================================================
+
 let selectedFile = null;
 
 
-// ============================================
-// 1. IMAGE SELECTION
-// ============================================
+// ============================================================
+// 4. CREATE / FIND RESULT ELEMENT
+// ============================================================
 
-if (imageInput) {
-    imageInput.addEventListener("change", function () {
+let resultContainer =
+    document.getElementById("result") ||
+    document.getElementById("resultContainer") ||
+    document.getElementById("analysisResult");
 
-        const file = this.files[0];
 
-        if (!file) {
-            return;
-        }
+// ============================================================
+// 5. FILE VALIDATION
+// ============================================================
 
-        selectedFile = file;
+function isValidImage(file) {
 
-        showImagePreview(file);
-    });
+    if (!file) {
+        return false;
+    }
+
+    const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
+
+    return allowedTypes.includes(file.type);
 }
 
 
-// ============================================
-// 2. SHOW IMAGE PREVIEW
-// ============================================
+// ============================================================
+// 6. SELECT IMAGE
+// ============================================================
+
+function handleFile(file) {
+
+    if (!file) {
+        return;
+    }
+
+
+    // Check image type
+    if (!isValidImage(file)) {
+
+        alert(
+            "Please select a JPG, JPEG, PNG or WEBP image."
+        );
+
+        return;
+    }
+
+
+    // Store selected image
+    selectedFile = file;
+
+
+    console.log("Selected image:", file.name);
+
+
+    // Show preview
+    showImagePreview(file);
+
+
+    // Enable analyze button
+    if (analyzeButton) {
+        analyzeButton.disabled = false;
+        analyzeButton.style.opacity = "1";
+        analyzeButton.style.cursor = "pointer";
+    }
+}
+
+
+// ============================================================
+// 7. SHOW IMAGE PREVIEW
+// ============================================================
 
 function showImagePreview(file) {
 
     const reader = new FileReader();
 
+
     reader.onload = function (event) {
 
-        // Find preview image
-        let preview = document.getElementById("imagePreview");
+        // Find existing preview image
+        let preview =
+            document.getElementById("previewImage");
 
-        // Create preview if it doesn't exist
+
+        // If preview doesn't exist, create it
         if (!preview) {
 
             preview = document.createElement("img");
 
-            preview.id = "imagePreview";
+            preview.id = "previewImage";
 
             preview.style.maxWidth = "500px";
             preview.style.maxHeight = "500px";
@@ -59,134 +133,191 @@ function showImagePreview(file) {
             preview.style.height = "auto";
             preview.style.display = "block";
             preview.style.margin = "20px auto";
-            preview.style.borderRadius = "20px";
+            preview.style.borderRadius = "15px";
             preview.style.objectFit = "contain";
 
+
+            // Put preview inside upload card
             if (uploadCard) {
                 uploadCard.appendChild(preview);
             }
         }
 
+
         preview.src = event.target.result;
+        preview.style.display = "block";
+
 
         // Show filename
-        let fileName = document.getElementById("selectedFileName");
+        let filenameElement =
+            document.getElementById("fileName");
 
-        if (!fileName) {
 
-            fileName = document.createElement("p");
+        if (filenameElement) {
 
-            fileName.id = "selectedFileName";
-
-            fileName.style.textAlign = "center";
-            fileName.style.fontSize = "18px";
-            fileName.style.fontWeight = "600";
-
-            if (uploadCard) {
-                uploadCard.appendChild(fileName);
-            }
+            filenameElement.textContent =
+                file.name;
         }
-
-        fileName.textContent = file.name;
-
-        // Create analyze button
-        createAnalyzeButton();
     };
+
 
     reader.readAsDataURL(file);
 }
 
 
-// ============================================
-// 3. CREATE ANALYZE BUTTON
-// ============================================
+// ============================================================
+// 8. NORMAL FILE SELECTION
+// ============================================================
 
-function createAnalyzeButton() {
+if (imageInput) {
 
-    let analyzeButton = document.getElementById("analyzeButton");
+    imageInput.addEventListener(
+        "change",
+        function () {
 
-    if (!analyzeButton) {
+            if (
+                this.files &&
+                this.files.length > 0
+            ) {
 
-        analyzeButton = document.createElement("button");
-
-        analyzeButton.id = "analyzeButton";
-
-        analyzeButton.innerHTML = "🔍 Analyze Image";
-
-        analyzeButton.style.display = "block";
-        analyzeButton.style.margin = "30px auto";
-        analyzeButton.style.padding = "18px 45px";
-        analyzeButton.style.border = "none";
-        analyzeButton.style.borderRadius = "16px";
-        analyzeButton.style.background = "#26382a";
-        analyzeButton.style.color = "white";
-        analyzeButton.style.fontSize = "20px";
-        analyzeButton.style.fontWeight = "700";
-        analyzeButton.style.cursor = "pointer";
-
-        analyzeButton.addEventListener("click", analyzeImage);
-
-        if (uploadCard) {
-            uploadCard.appendChild(analyzeButton);
+                handleFile(this.files[0]);
+            }
         }
-    }
-
-    analyzeButton.style.display = "block";
+    );
 }
 
 
-// ============================================
-// 4. ANALYZE IMAGE
-// ============================================
+// ============================================================
+// 9. DRAG & DROP
+// ============================================================
+
+if (uploadCard) {
+
+
+    // Drag over
+    uploadCard.addEventListener(
+        "dragover",
+        function (event) {
+
+            event.preventDefault();
+
+            uploadCard.classList.add("drag-over");
+        }
+    );
+
+
+    // Drag leave
+    uploadCard.addEventListener(
+        "dragleave",
+        function () {
+
+            uploadCard.classList.remove(
+                "drag-over"
+            );
+        }
+    );
+
+
+    // Drop
+    uploadCard.addEventListener(
+        "drop",
+        function (event) {
+
+            event.preventDefault();
+
+
+            uploadCard.classList.remove(
+                "drag-over"
+            );
+
+
+            const files =
+                event.dataTransfer.files;
+
+
+            if (
+                files &&
+                files.length > 0
+            ) {
+
+                handleFile(files[0]);
+            }
+        }
+    );
+}
+
+
+// ============================================================
+// 10. UPLOAD CARD CLICK
+// ============================================================
+
+if (uploadCard && imageInput) {
+
+    uploadCard.addEventListener(
+        "click",
+        function (event) {
+
+            // Don't trigger if clicking
+            // an existing button
+            if (
+                event.target.tagName === "BUTTON"
+            ) {
+                return;
+            }
+
+
+            imageInput.click();
+        }
+    );
+}
+
+
+// ============================================================
+// 11. ANALYZE IMAGE
+// ============================================================
 
 async function analyzeImage() {
 
+
+    // Check image
     if (!selectedFile) {
 
-        alert("Please choose an image first.");
+        alert(
+            "Please select an image first."
+        );
 
         return;
     }
 
-    const analyzeButton =
-        document.getElementById("analyzeButton");
 
-    // Loading state
-    if (analyzeButton) {
-
-        analyzeButton.disabled = true;
-
-        analyzeButton.innerHTML =
-            "⏳ Analyzing Image...";
-
-        analyzeButton.style.opacity = "0.7";
-        analyzeButton.style.cursor = "not-allowed";
-    }
+    console.log(
+        "Starting image analysis..."
+    );
 
 
-    // Remove previous result
-    const oldResult =
-        document.getElementById("analysisResult");
-
-    if (oldResult) {
-        oldResult.remove();
-    }
+    // Show loading
+    showLoading();
 
 
-    // Create form data
+    // Create FormData
     const formData = new FormData();
 
-    formData.append("file", selectedFile);
+
+    formData.append(
+        "file",
+        selectedFile
+    );
 
 
     try {
 
-        console.log("Sending image to backend...");
 
+        // ====================================================
+        // SEND IMAGE TO FASTAPI
+        // ====================================================
 
-        // Call FastAPI
         const response = await fetch(
-            API_URL,
+            `${API_URL}/predict`,
             {
                 method: "POST",
                 body: formData
@@ -194,530 +325,415 @@ async function analyzeImage() {
         );
 
 
+        console.log(
+            "API status:",
+            response.status
+        );
+
+
+        // ====================================================
+        // CHECK RESPONSE
+        // ====================================================
+
         if (!response.ok) {
 
             throw new Error(
-                "Backend returned HTTP " +
-                response.status
+                `Server returned ${response.status}`
             );
         }
 
 
-        const result = await response.json();
+        // Convert response to JSON
+        const result =
+            await response.json();
 
-        console.log("Backend result:", result);
+
+        console.log(
+            "Prediction result:",
+            result
+        );
 
 
-        // Check backend error
+        // ====================================================
+        // CHECK API ERROR
+        // ====================================================
+
         if (result.error) {
 
-            throw new Error(result.error);
+            showError(
+                result.error
+            );
+
+            return;
         }
 
 
-        // Show result
-        showAnalysisResult(result);
+        // ====================================================
+        // SHOW RESULT
+        // ====================================================
+
+        showResult(result);
 
 
     } catch (error) {
 
-        console.error("Analysis error:", error);
+        console.error(
+            "Analysis error:",
+            error
+        );
 
-        showError(error.message);
 
-    } finally {
-
-        // Restore button
-        if (analyzeButton) {
-
-            analyzeButton.disabled = false;
-
-            analyzeButton.innerHTML =
-                "🔍 Analyze Image";
-
-            analyzeButton.style.opacity = "1";
-
-            analyzeButton.style.cursor =
-                "pointer";
-        }
+        showError(
+            "Unable to connect to the AI server. " +
+            "Please try again in a few seconds."
+        );
     }
 }
 
 
-// ============================================
-// 5. SHOW ANALYSIS RESULT
-// ============================================
+// ============================================================
+// 12. ANALYZE BUTTON EVENT
+// ============================================================
 
-function showAnalysisResult(result) {
+if (analyzeButton) {
+
+    analyzeButton.addEventListener(
+        "click",
+        function (event) {
+
+            event.preventDefault();
+
+            analyzeImage();
+        }
+    );
+}
+
+
+// ============================================================
+// 13. SHOW LOADING
+// ============================================================
+
+function showLoading() {
+
+    let container =
+        getResultContainer();
+
+
+    container.innerHTML = `
+
+        <div class="analysis-result">
+
+            <h2>
+                🔍 Analyzing Image...
+            </h2>
+
+            <p>
+                Please wait while the AI model
+                analyzes your image.
+            </p>
+
+            <div class="loader"></div>
+
+        </div>
+
+    `;
+
+
+    container.style.display = "block";
+}
+
+
+// ============================================================
+// 14. SHOW RESULT
+// ============================================================
+
+function showResult(result) {
+
 
     const prediction =
         result.prediction || "UNKNOWN";
 
+
     const confidence =
-        Number(result.confidence || 0);
+        result.confidence ?? 0;
 
 
+    const filename =
+        result.filename || selectedFile?.name || "";
+
+
+    // Determine result type
     const isAI =
-        prediction === "AI GENERATED";
+        prediction.toUpperCase()
+            .includes("AI");
 
 
-    const resultBox =
-        document.createElement("div");
+    const isReal =
+        prediction.toUpperCase()
+            .includes("REAL");
 
-    resultBox.id = "analysisResult";
 
+    let icon = "🔍";
 
-    resultBox.style.maxWidth = "850px";
 
-    resultBox.style.margin =
-        "40px auto";
+    if (isAI) {
 
-    resultBox.style.padding =
-        "45px 30px";
+        icon = "🤖";
 
-    resultBox.style.borderRadius =
-        "28px";
+    } else if (isReal) {
 
-    resultBox.style.textAlign =
-        "center";
-
-    resultBox.style.background =
-        "#eef3e8";
-
-    resultBox.style.boxShadow =
-        "0 15px 40px rgba(0,0,0,0.08)";
-
-
-    // Status icon
-    const icon =
-        document.createElement("div");
-
-    icon.textContent =
-        isAI ? "⚠️" : "✓";
-
-    icon.style.fontSize =
-        "55px";
-
-    icon.style.marginBottom =
-        "10px";
-
-
-    // Prediction
-    const title =
-        document.createElement("h2");
-
-    title.textContent =
-        prediction;
-
-    title.style.fontSize =
-        "42px";
-
-    title.style.margin =
-        "10px 0";
-
-    title.style.fontWeight =
-        "800";
-
-    title.style.color =
-        "#18291d";
-
-
-    // Confidence
-    const confidenceText =
-        document.createElement("p");
-
-    confidenceText.innerHTML =
-        "Confidence: <strong>" +
-        confidence.toFixed(2) +
-        "%</strong>";
-
-    confidenceText.style.fontSize =
-        "24px";
-
-    confidenceText.style.margin =
-        "15px 0 25px";
-
-
-    // Confidence bar
-    const barContainer =
-        document.createElement("div");
-
-    barContainer.style.width =
-        "80%";
-
-    barContainer.style.height =
-        "14px";
-
-    barContainer.style.margin =
-        "0 auto 30px";
-
-    barContainer.style.background =
-        "#d8dfd2";
-
-    barContainer.style.borderRadius =
-        "20px";
-
-    barContainer.style.overflow =
-        "hidden";
-
-
-    const bar =
-        document.createElement("div");
-
-    bar.style.width =
-        Math.min(confidence, 100) + "%";
-
-    bar.style.height =
-        "100%";
-
-    bar.style.background =
-        "#304b35";
-
-    bar.style.borderRadius =
-        "20px";
-
-    bar.style.transition =
-        "width 1s ease";
-
-
-    barContainer.appendChild(bar);
-
-
-    // File name
-    const fileInfo =
-        document.createElement("p");
-
-    fileInfo.innerHTML =
-        "<strong>File:</strong> " +
-        escapeHTML(result.filename || selectedFile.name);
-
-    fileInfo.style.fontSize =
-        "17px";
-
-
-    // Model information
-    const modelInfo =
-        document.createElement("p");
-
-    modelInfo.innerHTML =
-        "<strong>Model:</strong> ResNet18";
-
-    modelInfo.style.fontSize =
-        "17px";
-
-
-    // Status
-    const status =
-        document.createElement("p");
-
-    status.innerHTML =
-        "<strong>Status:</strong> Analysis Complete";
-
-    status.style.fontSize =
-        "17px";
-
-
-    // Analyze another button
-    const anotherButton =
-        document.createElement("button");
-
-    anotherButton.textContent =
-        "Analyze Another Image";
-
-    anotherButton.style.marginTop =
-        "25px";
-
-    anotherButton.style.padding =
-        "15px 30px";
-
-    anotherButton.style.border =
-        "none";
-
-    anotherButton.style.borderRadius =
-        "14px";
-
-    anotherButton.style.background =
-        "#26382a";
-
-    anotherButton.style.color =
-        "white";
-
-    anotherButton.style.fontSize =
-        "17px";
-
-    anotherButton.style.fontWeight =
-        "700";
-
-    anotherButton.style.cursor =
-        "pointer";
-
-
-    anotherButton.addEventListener(
-        "click",
-        resetAnalyzer
-    );
-
-
-    // Build result box
-    resultBox.appendChild(icon);
-
-    resultBox.appendChild(title);
-
-    resultBox.appendChild(confidenceText);
-
-    resultBox.appendChild(barContainer);
-
-    resultBox.appendChild(fileInfo);
-
-    resultBox.appendChild(modelInfo);
-
-    resultBox.appendChild(status);
-
-    resultBox.appendChild(anotherButton);
-
-
-    // Add to page
-    const main =
-        document.querySelector("main");
-
-    if (main) {
-
-        main.appendChild(resultBox);
-
-        resultBox.scrollIntoView({
-            behavior: "smooth",
-            block: "center"
-        });
-
-    } else {
-
-        document.body.appendChild(resultBox);
+        icon = "✅";
     }
-}
 
 
-// ============================================
-// 6. ERROR MESSAGE
-// ============================================
-
-function showError(message) {
-
-    const errorBox =
-        document.createElement("div");
-
-    errorBox.id =
-        "analysisResult";
+    // Get result container
+    const container =
+        getResultContainer();
 
 
-    errorBox.style.maxWidth =
-        "850px";
+    // Display result
+    container.innerHTML = `
 
-    errorBox.style.margin =
-        "40px auto";
+        <div class="analysis-result">
 
-    errorBox.style.padding =
-        "40px";
+            <h2>
+                ${icon} ${prediction}
+            </h2>
 
-    errorBox.style.borderRadius =
-        "25px";
+            <p>
+                Confidence:
+                <strong>
+                    ${confidence.toFixed(2)}%
+                </strong>
+            </p>
 
-    errorBox.style.textAlign =
-        "center";
+            <p class="filename">
+                ${filename}
+            </p>
 
-    errorBox.style.background =
-        "#f1f5ec";
-
-
-    errorBox.innerHTML = `
-
-        <div style="font-size:50px;">
-            ⚠️
         </div>
 
-        <h2 style="
-            font-size:36px;
-            margin:15px 0;
-            color:#18291d;
-        ">
-            Analysis Failed
-        </h2>
-
-        <p style="
-            font-size:20px;
-            color:#59645a;
-        ">
-            ${escapeHTML(message)}
-        </p>
-
-        <p style="
-            font-size:16px;
-            color:#59645a;
-        ">
-            Make sure your backend server is running.
-        </p>
     `;
 
 
-    const main =
-        document.querySelector("main");
-
-    if (main) {
-
-        main.appendChild(errorBox);
-
-        errorBox.scrollIntoView({
-            behavior: "smooth",
-            block: "center"
-        });
-
-    } else {
-
-        document.body.appendChild(errorBox);
-    }
-}
+    container.style.display = "block";
 
 
-// ============================================
-// 7. RESET
-// ============================================
-
-function resetAnalyzer() {
-
-    selectedFile = null;
-
-
-    // Remove preview
-    const preview =
-        document.getElementById("imagePreview");
-
-    if (preview) {
-        preview.remove();
-    }
-
-
-    // Remove filename
-    const fileName =
-        document.getElementById("selectedFileName");
-
-    if (fileName) {
-        fileName.remove();
-    }
-
-
-    // Remove analyze button
-    const analyzeButton =
-        document.getElementById("analyzeButton");
-
-    if (analyzeButton) {
-        analyzeButton.remove();
-    }
-
-
-    // Remove result
-    const result =
-        document.getElementById("analysisResult");
-
-    if (result) {
-        result.remove();
-    }
-
-
-    // Reset input
-    if (imageInput) {
-        imageInput.value = "";
-    }
-
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
+    // Scroll to result
+    container.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
     });
 }
 
 
-// ============================================
-// 8. DRAG AND DROP
-// ============================================
+// ============================================================
+// 15. SHOW ERROR
+// ============================================================
 
-if (uploadCard) {
+function showError(message) {
 
-    uploadCard.addEventListener(
-        "dragover",
-        function (event) {
-
-            event.preventDefault();
-
-            uploadCard.style.opacity =
-                "0.7";
-        }
-    );
+    const container =
+        getResultContainer();
 
 
-    uploadCard.addEventListener(
-        "dragleave",
-        function () {
+    container.innerHTML = `
 
-            uploadCard.style.opacity =
-                "1";
-        }
-    );
+        <div class="analysis-result error">
+
+            <h2>
+                ⚠️ Analysis Failed
+            </h2>
+
+            <p>
+                ${message}
+            </p>
+
+            <p>
+                Make sure the backend server
+                is running and try again.
+            </p>
+
+        </div>
+
+    `;
 
 
-    uploadCard.addEventListener(
-        "drop",
-        function (event) {
-
-            event.preventDefault();
-
-            uploadCard.style.opacity =
-                "1";
-
-            const files =
-                event.dataTransfer.files;
-
-            if (
-                files &&
-                files.length > 0
-            ) {
-
-                const file =
-                    files[0];
-
-                if (
-                    !file.type.startsWith(
-                        "image/"
-                    )
-                ) {
-
-                    alert(
-                        "Please select an image file."
-                    );
-
-                    return;
-                }
-
-                selectedFile = file;
-
-                showImagePreview(file);
-            }
-        }
-    );
+    container.style.display = "block";
 }
 
 
-// ============================================
-// 9. HTML ESCAPE
-// ============================================
+// ============================================================
+// 16. GET RESULT CONTAINER
+// ============================================================
 
-function escapeHTML(value) {
+function getResultContainer() {
 
-    const div =
+    if (resultContainer) {
+
+        return resultContainer;
+    }
+
+
+    // Create result container
+    resultContainer =
         document.createElement("div");
 
-    div.textContent = value;
 
-    return div.innerHTML;
+    resultContainer.id =
+        "analysisResult";
+
+
+    resultContainer.style.display =
+        "none";
+
+
+    resultContainer.style.margin =
+        "30px auto";
+
+
+    resultContainer.style.maxWidth =
+        "900px";
+
+
+    resultContainer.style.padding =
+        "30px";
+
+
+    resultContainer.style.textAlign =
+        "center";
+
+
+    // Add to page
+    document.body.appendChild(
+        resultContainer
+    );
+
+
+    return resultContainer;
 }
+
+
+// ============================================================
+// 17. ADD LOADING CSS
+// ============================================================
+
+const style =
+    document.createElement("style");
+
+
+style.textContent = `
+
+    .analysis-result {
+        background: #eef3e9;
+        padding: 45px;
+        border-radius: 25px;
+        text-align: center;
+        margin: 30px auto;
+        max-width: 900px;
+    }
+
+    .analysis-result h2 {
+        font-size: 42px;
+        margin-bottom: 20px;
+    }
+
+    .analysis-result p {
+        font-size: 24px;
+        color: #647064;
+    }
+
+    .analysis-result strong {
+        font-size: 28px;
+        color: #26382a;
+    }
+
+    .analysis-result.error {
+        background: #fff1f1;
+    }
+
+    .analysis-result.error h2 {
+        color: #b42318;
+    }
+
+    .filename {
+        font-size: 16px !important;
+        margin-top: 20px;
+    }
+
+    .loader {
+        width: 45px;
+        height: 45px;
+        border: 5px solid #d5ddd0;
+        border-top: 5px solid #26382a;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 25px auto;
+    }
+
+    @keyframes spin {
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .drag-over {
+        border-color: #26382a !important;
+        transform: scale(1.01);
+    }
+
+`;
+
+
+document.head.appendChild(style);
+
+
+// ============================================================
+// 18. BACKEND HEALTH CHECK
+// ============================================================
+
+async function checkBackend() {
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/health`
+            );
+
+
+        if (response.ok) {
+
+            const data =
+                await response.json();
+
+            console.log(
+                "Backend health:",
+                data
+            );
+
+        } else {
+
+            console.warn(
+                "Backend health check failed."
+            );
+        }
+
+    } catch (error) {
+
+        console.warn(
+            "Backend is not reachable:",
+            error
+        );
+    }
+}
+
+
+// ============================================================
+// 19. START HEALTH CHECK
+// ============================================================
+
+checkBackend();
 
 
 console.log(
