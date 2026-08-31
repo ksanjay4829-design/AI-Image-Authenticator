@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Analyze Image | AI Image Authenticator</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            margin: 0;
+            background: #f7f4e9;
+            font-family: Arial, sans-serif;
+            color: #263326;
+        }
+
+        header {
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 45px;
+            border-bottom: 1px solid #ddd8c8;
+            background: #f7f4e9;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo-icon {
+            width: 55px;
+            height: 55px;
+            background: #263326;
+            color: white;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 25px;
+        }
+
+        nav {
+            display: flex;
+            gap: 40px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #5c6258;
+            font-size: 18px;
+        }
+
+        nav a:hover {
+            color: #263326;
+        }
+
+        main {
+            min-height: calc(100vh - 90px);
+            padding: 50px 30px;
+        }
+
+        .analyzer-page {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .page-title h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .page-title p {
+            color: #73796e;
+            font-size: 18px;
+        }
+
+        .upload-card {
+            background: #fffefa;
+            border: 2px dashed #52614d;
+            border-radius: 30px;
+            min-height: 500px;
+            padding: 45px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        .upload-icon {
+            width: 90px;
+            height: 90px;
+            border-radius: 25px;
+            background: #e8eddf;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 45px;
+            margin-bottom: 25px;
+        }
+
+        .upload-card h2 {
+            font-size: 32px;
+            margin: 10px 0;
+        }
+
+        .upload-card p {
+            color: #73796e;
+            font-size: 18px;
+            margin-bottom: 25px;
+        }
+
+        #imageInput {
+            display: none;
+        }
+
+        .choose-btn {
+            background: #263326;
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 17px 35px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .choose-btn:hover {
+            background: #3b4938;
+        }
+
+        .upload-formats {
+            margin-top: 20px;
+            color: #8b9186;
+            letter-spacing: 2px;
+        }
+
+        #previewContainer {
+            width: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #imagePreview {
+            max-width: 550px;
+            max-height: 500px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 20px;
+            margin: 20px 0;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.12);
+        }
+
+        .file-name {
+            font-size: 16px;
+            color: #697064;
+            margin-bottom: 20px;
+        }
+
+        .analyze-btn {
+            background: #263326;
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 17px 45px;
+            font-size: 19px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .analyze-btn:hover {
+            background: #3b4938;
+            transform: translateY(-2px);
+        }
+
+        .analyze-btn:disabled {
+            background: #9da59a;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-box {
+            display: none;
+            width: 100%;
+            max-width: 650px;
+            margin-top: 35px;
+            padding: 30px;
+            border-radius: 20px;
+            background: #eef2e8;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .result-box h2 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .result-box p {
+            font-size: 20px;
+        }
+
+        .loading {
+            font-size: 20px;
+            color: #596452;
+        }
+
+        @media (max-width: 700px) {
+
+            header {
+                padding: 0 20px;
+            }
+
+            nav {
+                gap: 15px;
+            }
+
+            nav a {
+                font-size: 14px;
+            }
+
+            .page-title h1 {
+                font-size: 30px;
+            }
+
+            .upload-card {
+                padding: 25px;
+            }
+
+            #imagePreview {
+                max-width: 100%;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+
+    <header>
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                ✓
+            </div>
+
+            <span>AI Image Authenticator</span>
+
+        </div>
+
+
+        <nav>
+
+            <a href="index.html">Home</a>
+
+            <a href="analyze.html">Analyze</a>
+
+            <a href="index.html#how-it-works">
+                How It Works
+            </a>
+
+            <a href="index.html#about">
+                About
+            </a>
+
+        </nav>
+
+    </header>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main>
+
+        <section class="analyzer-page">
+
+
+            <!-- PAGE TITLE -->
+
+            <div class="page-title">
+
+                <h1>Analyze Your Image</h1>
+
+                <p>
+                    Upload an image and let our AI determine
+                    whether it is AI-generated or real.
+                </p>
+
+            </div>
+
+
+            <!-- ================= UPLOAD CARD ================= -->
+
+            <div class="upload-card">
+
+
+                <!-- BEFORE IMAGE IS SELECTED -->
+
+                <div id="uploadContent">
+
+                    <div class="upload-icon">
+                        ☁
+                    </div>
+
+
+                    <h2>
+                        Drop your image here
+                    </h2>
+
+
+                    <p>
+                        or browse files from your device
+                    </p>
+
+
+                    <!-- HIDDEN FILE INPUT -->
+
+                    <input
+                        type="file"
+                        id="imageInput"
+                        accept=".jpg,.jpeg,.png,.webp"
+                    >
+
+
+                    <!-- CHOOSE IMAGE BUTTON -->
+
+                    <button
+                        type="button"
+                        class="choose-btn"
+                        id="chooseBtn"
+                    >
+                        📁 Choose Image
+                    </button>
+
+
+                    <div class="upload-formats">
+
+                        JPG
+                        <span>•</span>
+                        JPEG
+                        <span>•</span>
+                        PNG
+                        <span>•</span>
+                        WEBP
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================= IMAGE PREVIEW ================= -->
+
+                <div id="previewContainer">
+
+                    <img
+                        id="imagePreview"
+                        alt="Selected image"
+                    >
+
+
+                    <div
+                        id="fileName"
+                        class="file-name"
+                    ></div>
+
+
+                    <!-- ANALYZE BUTTON -->
+
+                    <button
+                        type="button"
+                        id="analyzeBtn"
+                        class="analyze-btn"
+                    >
+                        🔍 Analyze Image
+                    </button>
+
+
+                    <!-- RESULT -->
+
+                    <div
+                        id="result"
+                        class="result-box"
+                    ></div>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- JAVASCRIPT -->
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

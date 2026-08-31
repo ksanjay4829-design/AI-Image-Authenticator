@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Image Authenticator</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Material Icons -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet"
+    >
+
+    <!-- Our CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+
+<body>
+
+    <!-- =========================
+         NAVIGATION
+    ========================== -->
+
+    <header class="navbar">
+
+        <div class="navbar-inner">
+
+            <a href="index.html" class="logo">
+                <span class="logo-icon">
+                    <span class="material-symbols-outlined">
+                        verified
+                    </span>
+                </span>
+
+                <span class="logo-text">
+                    AI Image Authenticator
+                </span>
+            </a>
+
+
+            <nav class="desktop-nav">
+
+                <a href="index.html" class="active">
+                    Home
+                </a>
+
+                <a href="analyze.html">
+                    Analyze
+                </a>
+
+                <a href="#how-it-works">
+                    How It Works
+                </a>
+
+                <a href="#about">
+                    About
+                </a>
+
+            </nav>
+
+
+            <a href="analyze.html" class="nav-button">
+
+                <span class="material-symbols-outlined">
+                    document_scanner
+                </span>
+
+                Analyze Image
+
+            </a>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================
+         HERO SECTION
+    ========================== -->
+
+    <main>
+
+        <section class="hero">
+
+            <div class="hero-content">
+
+                <div class="hero-badge">
+
+                    <span class="material-symbols-outlined">
+                        auto_awesome
+                    </span>
+
+                    AI-POWERED IMAGE DETECTION
+
+                </div>
+
+
+                <h1>
+                    Know what
+                    <span>you're looking at.</span>
+                </h1>
+
+
+                <p class="hero-description">
+
+                    Upload an image and let our deep-learning
+                    model determine whether it is AI-generated
+                    or a real photograph.
+
+                </p>
+
+
+                <div class="hero-buttons">
+
+                    <a
+                        href="analyze.html"
+                        class="primary-button"
+                    >
+
+                        Analyze an Image
+
+                        <span class="material-symbols-outlined">
+                            arrow_forward
+                        </span>
+
+                    </a>
+
+
+                    <a
+                        href="#how-it-works"
+                        class="secondary-button"
+                    >
+
+                        How It Works
+
+                    </a>
+
+                </div>
+
+
+                <div class="hero-note">
+
+                    <span class="material-symbols-outlined">
+                        lock
+                    </span>
+
+                    Your image is analyzed securely.
+
+                </div>
+
+            </div>
+
+
+
+            <!-- HERO ANALYSIS CARD -->
+
+            <div class="hero-visual">
+
+                <div class="analysis-card">
+
+                    <div class="analysis-card-top">
+
+                        <span>
+                            IMAGE ANALYSIS
+                        </span>
+
+                        <span class="status-dot">
+                            READY
+                        </span>
+
+                    </div>
+
+
+                    <div class="analysis-preview">
+
+                        <div class="preview-placeholder">
+
+                            <span class="material-symbols-outlined">
+                                image
+                            </span>
+
+                            <p>
+                                Upload an image
+                            </p>
+
+                        </div>
+
+
+                        <div class="scan-line"></div>
+
+                    </div>
+
+
+                    <div class="analysis-footer">
+
+                        <div>
+
+                            <small>
+                                MODEL
+                            </small>
+
+                            <strong>
+                                ResNet18
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <small>
+                                CLASSIFICATION
+                            </small>
+
+                            <strong>
+                                AI / REAL
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Floating card -->
+
+                <div class="floating-card">
+
+                    <div class="floating-icon">
+
+                        <span class="material-symbols-outlined">
+                            verified
+                        </span>
+
+                    </div>
+
+                    <div>
+
+                        <small>
+                            MODEL CONFIDENCE
+                        </small>
+
+                        <strong>
+                            Ready for analysis
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             FEATURE SECTION
+        ========================== -->
+
+        <section class="features-section">
+
+            <div class="section-heading">
+
+                <span>
+                    IMAGE VERIFICATION
+                </span>
+
+                <h2>
+                    A simpler way to
+                    understand images.
+                </h2>
+
+            </div>
+
+
+            <div class="feature-grid">
+
+
+                <article class="feature-card">
+
+                    <div class="feature-number">
+                        01
+                    </div>
+
+                    <span class="material-symbols-outlined feature-icon">
+                        upload_file
+                    </span>
+
+                    <h3>
+                        Upload
+                    </h3>
+
+                    <p>
+                        Select a JPG, JPEG, PNG, or WEBP image
+                        from your device.
+                    </p>
+
+                </article>
+
+
+
+                <article class="feature-card">
+
+                    <div class="feature-number">
+                        02
+                    </div>
+
+                    <span class="material-symbols-outlined feature-icon">
+                        psychology
+                    </span>
+
+                    <h3>
+                        Analyze
+                    </h3>
+
+                    <p>
+                        Our trained ResNet18 deep-learning
+                        model processes the image.
+                    </p>
+
+                </article>
+
+
+
+                <article class="feature-card">
+
+                    <div class="feature-number">
+                        03
+                    </div>
+
+                    <span class="material-symbols-outlined feature-icon">
+                        verified
+                    </span>
+
+                    <h3>
+                        Verify
+                    </h3>
+
+                    <p>
+                        Receive a prediction and model
+                        confidence score.
+                    </p>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             HOW IT WORKS
+        ========================== -->
+
+        <section
+            class="how-section"
+            id="how-it-works"
+        >
+
+            <div class="how-content">
+
+                <span class="section-label">
+                    HOW IT WORKS
+                </span>
+
+                <h2>
+                    From image
+                    to insight.
+                </h2>
+
+                <p>
+                    AI Image Authenticator uses a trained
+                    ResNet18 image classification model to
+                    classify an image into two categories:
+                    AI GENERATED or REAL IMAGE.
+                </p>
+
+                <a
+                    href="analyze.html"
+                    class="primary-button"
+                >
+
+                    Start Analysis
+
+                    <span class="material-symbols-outlined">
+                        arrow_forward
+                    </span>
+
+                </a>
+
+            </div>
+
+
+            <div class="process">
+
+                <div class="process-step">
+
+                    <span>
+                        01
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Upload
+                        </h3>
+
+                        <p>
+                            Choose your image.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="process-line"></div>
+
+
+                <div class="process-step">
+
+                    <span>
+                        02
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Preprocess
+                        </h3>
+
+                        <p>
+                            Prepare the image for analysis.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="process-line"></div>
+
+
+                <div class="process-step">
+
+                    <span>
+                        03
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            ResNet18
+                        </h3>
+
+                        <p>
+                            Run the trained model.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="process-line"></div>
+
+
+                <div class="process-step">
+
+                    <span>
+                        04
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Result
+                        </h3>
+
+                        <p>
+                            View prediction and confidence.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             ABOUT
+        ========================== -->
+
+        <section
+            class="about-section"
+            id="about"
+        >
+
+            <span class="section-label">
+                ABOUT THE PROJECT
+            </span>
+
+            <h2>
+                Powered by
+                deep learning.
+            </h2>
+
+            <p>
+                The application uses PyTorch and a trained
+                ResNet18 model for binary image classification.
+                The two classes are AI GENERATED and REAL IMAGE.
+            </p>
+
+
+            <div class="technology-grid">
+
+                <div>
+                    <strong>
+                        ResNet18
+                    </strong>
+
+                    <span>
+                        Model Architecture
+                    </span>
+                </div>
+
+
+                <div>
+                    <strong>
+                        PyTorch
+                    </strong>
+
+                    <span>
+                        Deep Learning
+                    </span>
+                </div>
+
+
+                <div>
+                    <strong>
+                        FastAPI
+                    </strong>
+
+                    <span>
+                        Backend API
+                    </span>
+                </div>
+
+
+                <div>
+                    <strong>
+                        2 Classes
+                    </strong>
+
+                    <span>
+                        AI / Real
+                    </span>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer>
+
+        <div class="footer-inner">
+
+            <div class="logo">
+
+                <span class="logo-icon">
+
+                    <span class="material-symbols-outlined">
+                        verified
+                    </span>
+
+                </span>
+
+                <span class="logo-text">
+                    AI Image Authenticator
+                </span>
+
+            </div>
+
+
+            <p>
+                AI-powered image authenticity detection.
+            </p>
+
+        </div>
+
+    </footer>
+
+
+</body>
+
+</html>
